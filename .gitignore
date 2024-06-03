@@ -1,3 +1,4 @@
 /.env
-config.py
+/.vscode
+django/api/tclient/config.py
 __pycache__
