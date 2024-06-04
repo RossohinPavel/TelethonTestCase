@@ -2,8 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseNotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
-from api import tclient
+from api import tclient, wbparser
 
 
 # Create your views here.
@@ -71,3 +70,13 @@ class MessagesAPIView(PhoneCheckMixin):
         text, phone, username = data['message_text'], data['from_phone'], data['username']
         tclient.send_message(text, phone, username)
         return Response({'status': 'ok!'})
+
+
+class WildberrysParserAPIView(APIView):
+    """Парсер wildberrys"""
+
+    def get(self, request):
+        if 'wild' in request.data:
+            return Response(wbparser.parser(request.data['wild']))
+
+        return HttpResponseNotFound()
