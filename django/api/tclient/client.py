@@ -1,10 +1,5 @@
 from telethon import TelegramClient
-import threading
-from . import qr_render
-
-
-CLIENT: TelegramClient
-THREAD: threading.Thread
+import asyncio
 
 
 # Получение настроек телеграм клиента из файла или из окружения.
@@ -15,18 +10,7 @@ def _get_config_from_file() -> dict:
 def _get_config_from_enviroment():
     pass
 
+
 CONFIG = _get_config_from_enviroment() or _get_config_from_file()
-
-
-async def _login(client: TelegramClient):
-    pass
-
-
-def login(phone_num: str):
-    global CLIENT
-    CLIENT = TelegramClient(f'session_{phone_num}', CONFIG['APP_id'], CONFIG['APP_HASH'])
-    CLIENT.loop.run_until_complete(_login(CLIENT))
-
-
-def logout():
-    pass
+CLIENTS: dict[str, TelegramClient] = {}
+LOOP = asyncio.get_event_loop()

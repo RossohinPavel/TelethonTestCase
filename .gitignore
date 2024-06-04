@@ -2,3 +2,5 @@
 /.vscode
 django/api/tclient/config.py
 __pycache__
+*.session
+*.session-journal

@@ -1,7 +1,8 @@
 from django.shortcuts import render
+from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from . import tclient
+from api import tclient
 
 
 # Create your views here.
@@ -17,3 +18,13 @@ class LoginAPIView(APIView):
 
         except Exception as e:
             return Response({'error': str(e)})
+
+
+def get_qr(request):
+    """Представление для странички с qr"""
+    if request.method == 'GET' and 'phone' in request.GET:
+        status, token = tclient.login(request.GET['phone'])
+        data = {'status': status, 'token': token}
+        return render(request, 'api/qr.html', context=data)
+
+    return Http404
