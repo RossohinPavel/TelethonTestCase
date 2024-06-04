@@ -1,1 +1,2 @@
-from .loginout import login, logout, get_token
+from .loginout import login, logout, get_token, check
+from .messages import get_messages
