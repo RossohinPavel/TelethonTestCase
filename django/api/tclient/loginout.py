@@ -56,7 +56,8 @@ def get_token(phone: str) -> tuple[str, str|None]:
 def logout(phone: str) -> str:
     """Логаут))"""
     if phone not in CLIENTS:
-        return ERROR
+        raise Exception('User not logined')
     
     LOOP.run_until_complete(CLIENTS[phone].log_out())
+    CLIENTS.pop(phone, None)
     return 'logout success'

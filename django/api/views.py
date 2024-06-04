@@ -60,6 +60,13 @@ def get_qr(request):
 
 
 class MessagesAPIView(PhoneCheckMixin):
+    """Отправка сообщений"""
     def get(self, request):
         phone, uname = request.GET['phone'], request.GET['uname']
         return Response(tclient.get_messages(phone, uname))
+    
+    def post(self, request):
+        data = request.data
+        text, phone, username = data['message_text'], data['from_phone'], data['username']
+        tclient.send_message(text, phone, username)
+        return Response({'status': 'ok!'})
