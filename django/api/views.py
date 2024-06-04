@@ -63,7 +63,8 @@ class MessagesAPIView(PhoneCheckMixin):
     """Отправка сообщений"""
     def get(self, request):
         phone, uname = request.GET['phone'], request.GET['uname']
-        return Response(tclient.get_messages(phone, uname))
+        save = request.GET.get('save', False)
+        return Response(tclient.get_messages(phone, uname, save))
     
     def post(self, request):
         data = request.data
