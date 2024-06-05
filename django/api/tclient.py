@@ -10,8 +10,8 @@ if not os.path.exists('Messages'):
 
 
 # Получение настроек телеграм клиента из окружения.
-TG_API_ID = os.environ.get('TG_API_ID')
-TG_API_HASH = os.environ.get('TG_API_HASH')
+TG_API_ID = os.getenv('TG_API_ID')
+TG_API_HASH = os.getenv('TG_API_HASH')
 
 # Словарик для хранения объектов-клиентов Телеги
 CLIENTS: dict[str, TelegramClient] = {}
@@ -19,6 +19,7 @@ CLIENTS: dict[str, TelegramClient] = {}
 # Ссылка на цикл, для запуска в синхронном режиме. 
 # Использовать ф-ю run_until_complete, например.
 LOOP = asyncio.get_event_loop()
+LOOP.run_in_executor
 
 # Статусы возрата для чек ф-ии
 ERROR = 'error'
@@ -33,9 +34,10 @@ def login(phone: str):
 
 
 async def _await_client(phone: str):
-    """Создает объект клиента и конектит его."""   
-    c = CLIENTS[phone] = TelegramClient(phone, TG_API_ID, TG_API_HASH)
+    """Создает объект клиента и конектит его."""
+    c = TelegramClient(phone, TG_API_ID, TG_API_HASH)
     await c.connect()
+    CLIENTS[phone] = c
 
 
 def check(phone: str) -> str:
@@ -44,10 +46,15 @@ def check(phone: str) -> str:
         return ERROR
     
     client = CLIENTS[phone]
+    # Проверка на ожидание кода не совсем правильная. 
+    # Если мы что-то ожидаем, так это qr. Не дружелюбно ко множеству пользователей.
+    if LOOP.is_running() or not LOOP.run_until_complete(client.is_user_authorized()):
+        return WAITTING
+
     if LOOP.run_until_complete(client.is_user_authorized()):
         return LOGINED
     
-    return WAITTING
+    return ERROR
 
 
 def logout(phone: str) -> str:
@@ -74,7 +81,8 @@ def get_token(phone: str) -> tuple[str, str|None]:
         # Будем ждать скан qr в фоне 5 минут
         t = threading.Thread(
             target=LOOP.run_until_complete, 
-            args=(qr_login.wait(120), )
+            args=(qr_login.wait(120), ),
+            daemon=True
         )
         t.start()
 

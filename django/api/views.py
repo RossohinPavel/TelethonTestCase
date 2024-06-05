@@ -63,19 +63,19 @@ class MessagesAPIView(PhoneCheckMixin):
     def get(self, request):
         phone, uname = request.GET['phone'], request.GET['uname']
         save = request.GET.get('save', False)
-        return Response(tclient.get_messages(phone, uname, save))
+        return Response({'messages': tclient.get_messages(phone, uname, save)})
     
     def post(self, request):
         data = request.data
         text, phone, username = data['message_text'], data['from_phone'], data['username']
         tclient.send_message(text, phone, username)
-        return Response({'status': 'ok!'})
+        return Response({'status': 'ok'})
 
 
 class WildberrysParserAPIView(APIView):
     """Парсер wildberrys"""
 
-    def get(self, request):
+    def post(self, request):
         if 'wild' in request.data:
             return Response(wbparser.parser(request.data['wild']))
 

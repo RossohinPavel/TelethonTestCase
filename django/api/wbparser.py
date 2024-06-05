@@ -7,7 +7,7 @@ MOSCOW_LOC = '-364001'
 
 def _parser(response):
     """Парсит словарь"""
-    data = response['data']['products'][:10]
+    data = response['data']['products'][:11]
     for obj in data:
         yield obj['name'], f'https://www.wildberries.ru/catalog/{obj['id']}/detail.aspx'
 
