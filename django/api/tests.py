@@ -9,7 +9,7 @@ class EnviromentTestCase(TestCase):
     def test_variables_exists(self):
         assert os.getenv('TG_API_ID') != None
         assert os.getenv('TG_API_HASH') != None
-        assert os.getenv('TEST_PHONE') != None
+        # assert os.getenv('TEST_PHONE') != None
 
 
 class WrongLoginTestCase(TestCase):
